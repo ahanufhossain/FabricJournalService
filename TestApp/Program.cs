@@ -30,17 +30,17 @@ namespace TestApp
         private static async Task Run(string[] args)
         {
             // The Fabric URI of the service.
-            var serviceName = new Uri("fabric:/DistributedJournalApp/DistributedJournalService");
-            var serviceResolver = new ServicePartitionResolver(() => new FabricClient());
+            Uri serviceName = new Uri("fabric:/DistributedJournalApp/DistributedJournalService");
+            ServicePartitionResolver serviceResolver = new ServicePartitionResolver(() => new FabricClient());
 
-            var clientFactory = new WcfCommunicationClientFactory<IKeyValueStore>(
-                serviceResolver,
-                ServiceBindings.TcpBinding);
+            WcfCommunicationClientFactory<IKeyValueStore> clientFactory = new WcfCommunicationClientFactory<IKeyValueStore>(
+                ServiceBindings.TcpBinding,
+                servicePartitionResolver: serviceResolver);
 
-            var client = new ServicePartitionClient<WcfCommunicationClient<IKeyValueStore>>(
+            ServicePartitionClient<WcfCommunicationClient<IKeyValueStore>> client = new ServicePartitionClient<WcfCommunicationClient<IKeyValueStore>>(
                 clientFactory,
                 serviceName,
-                partitionKey: 0L);
+                new ServicePartitionKey(0L));
 
             Console.WriteLine("Calling set");
             await Set(client, "test", 38);

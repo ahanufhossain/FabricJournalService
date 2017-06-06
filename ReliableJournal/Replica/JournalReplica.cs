@@ -71,6 +71,8 @@
 
         private readonly Serializer serializer;
 
+        private StatefulServiceContext serviceContext;
+
         public JournalReplica(IEventSourcedService<TOperation> service, RuntimeTypeModel serializer = null)
         {
             if (service == null)
@@ -97,11 +99,21 @@
 
         public void Initialize(StatefulServiceInitializationParameters context)
         {
-            this.serviceParameters = context;
-            var replicaId = context.ReplicaId.ToString("X");
-            var partitionKey = context.PartitionId.ToString("N");
-            var workDirectory = context.CodePackageActivationContext.WorkDirectory;
-            this.logFilePath = Path.Combine(workDirectory, $"journal_{partitionKey}_{replicaId}");
+            serviceParameters = context;
+            string replicaId = context.ReplicaId.ToString("X");
+            string partitionKey = context.PartitionId.ToString("N");
+            string workDirectory = context.CodePackageActivationContext.WorkDirectory;
+            logFilePath = Path.Combine(workDirectory, $"journal_{partitionKey}_{replicaId}");
+
+            NodeContext nodeContext = FabricRuntime.GetNodeContext();
+            serviceContext = new StatefulServiceContext(
+                nodeContext,
+                context.CodePackageActivationContext,
+                context.ServiceTypeName,
+                context.ServiceName,
+                context.InitializationData,
+                context.PartitionId,
+                context.ReplicaId);
         }
 
         public async Task<IReplicator> OpenAsync(
@@ -242,7 +254,7 @@
 
             // Open the service.
             this.reliableJournal = new ReliableJournal<TOperation>(this.operationReplicator, this.service);
-            this.listener = this.service.CreateCommunicationListener(this.serviceParameters);
+            listener = service.CreateCommunicationListener(serviceContext);
             await this.service.Open(this.reliableJournal, cancellationToken);
 
             // Apply existing events

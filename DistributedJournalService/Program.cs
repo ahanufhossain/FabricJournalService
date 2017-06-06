@@ -14,7 +14,7 @@ namespace DistributedJournalService
             try
             {
                 // Creating a FabricRuntime connects this host process to the Service Fabric runtime.
-                using (var fabricRuntime = FabricRuntime.Create())
+                using (FabricRuntime fabricRuntime = FabricRuntime.Create())
                 {
                     // The ServiceManifest.XML file defines one or more service type names.
                     // RegisterServiceType maps a service type name to a .NET class.

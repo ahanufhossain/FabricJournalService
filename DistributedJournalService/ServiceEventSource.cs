@@ -68,12 +68,12 @@ namespace DistributedJournalService
             {
                 string finalMessage = string.Format(message, args);
                 ServiceMessage(
-                    service.ServiceInitializationParameters.ServiceName.ToString(),
-                    service.ServiceInitializationParameters.ServiceTypeName,
-                    service.ServiceInitializationParameters.InstanceId,
-                    service.ServiceInitializationParameters.PartitionId,
-                    service.ServiceInitializationParameters.CodePackageActivationContext.ApplicationName,
-                    service.ServiceInitializationParameters.CodePackageActivationContext.ApplicationTypeName,
+                    service.Context.ServiceName.ToString(),
+                    service.Context.ServiceTypeName,
+                    service.Context.InstanceId,
+                    service.Context.PartitionId,
+                    service.Context.CodePackageActivationContext.ApplicationName,
+                    service.Context.CodePackageActivationContext.ApplicationTypeName,
                     FabricRuntime.GetNodeContext().NodeName,
                     finalMessage);
             }

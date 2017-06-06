@@ -36,21 +36,18 @@ namespace DistributedJournalService
         /// <summary>
         /// Creates and returns a communication listener.
         /// </summary>
-        /// <param name="initializationParameters">
-        /// The service initialization parameters.
+        /// <param name="context">
+        /// The service context.
         /// </param>
         /// <returns>
         /// A new <see cref="ICommunicationListener"/>.
         /// </returns>
-        public ICommunicationListener CreateCommunicationListener(StatefulServiceInitializationParameters initializationParameters)
+        public ICommunicationListener CreateCommunicationListener(StatefulServiceContext context)
         {
-            this.replicaId = initializationParameters.ReplicaId;
-            this.partitionId = initializationParameters.PartitionId;
-            return new WcfCommunicationListener(initializationParameters, typeof(IKeyValueStore), this)
-            {
-                Binding = ServiceBindings.TcpBinding,
-                EndpointResourceName = "ServiceEndpoint"
-            };
+            replicaId = context.ReplicaId;
+            partitionId = context.PartitionId;
+
+            return new WcfCommunicationListener<IKeyValueStore>(context, this, ServiceBindings.TcpBinding, "ServiceEndpoint");
         }
 
         /// <summary>

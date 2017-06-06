@@ -8,8 +8,7 @@
 
     public interface IEventSourcedService<TOperation>
     {
-        ICommunicationListener CreateCommunicationListener(
-            StatefulServiceInitializationParameters initializationParameters);
+        ICommunicationListener CreateCommunicationListener(StatefulServiceContext context);
 
         /// <summary>
         /// Applies the provided <paramref name="operation"/>.
